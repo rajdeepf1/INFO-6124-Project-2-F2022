@@ -1,5 +1,6 @@
 package com.example.project02.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -71,7 +72,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 return true
             }
             R.id.action_about ->{
-                Toast.makeText(applicationContext, "click on exit", Toast.LENGTH_LONG).show()
+                startActivity(Intent(this,AboutActivity::class.java))
                 return true
             }
             else -> super.onOptionsItemSelected(item)
