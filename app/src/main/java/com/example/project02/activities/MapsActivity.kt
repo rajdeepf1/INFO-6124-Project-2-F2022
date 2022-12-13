@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
-import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
@@ -30,7 +29,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import java.util.*
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerClickListener {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -39,14 +38,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
 
     var geocoder: Geocoder? = null
     var addresses: List<Address>? = null
-    var latitudeGlobal : Double = 0.0
-    var longitudeGlobal : Double = 0.0
+    var latitudeGlobal: Double = 0.0
+    var longitudeGlobal: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar()?.setDisplayShowHomeEnabled(true);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -71,7 +73,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.uiSettings.isZoomControlsEnabled = true
-        mMap. setOnMarkerClickListener (this)
+        mMap.setOnMarkerClickListener(this)
         getLastLocation()
     }
 
@@ -85,8 +87,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
                     if (location == null) {
                         requestNewLocationData()
                     } else {
-                        Log.d("LatLng",location.latitude.toString()+"-------"+location.longitude.toString())
-                        userCurrentLocationMarkerOnMap(LatLng(location.latitude,location.longitude))
+                        Log.d(
+                            "LatLng",
+                            location.latitude.toString() + "-------" + location.longitude.toString()
+                        )
+                        userCurrentLocationMarkerOnMap(
+                            LatLng(
+                                location.latitude,
+                                location.longitude
+                            )
+                        )
                         latitudeGlobal = location.latitude
                         longitudeGlobal = location.longitude
                     }
@@ -120,8 +130,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
         override fun onLocationResult(locationResult: LocationResult) {
             var mLastLocation: Location = locationResult.lastLocation!!
 
-            Log.d("LatLng",mLastLocation.latitude.toString()+"-------"+mLastLocation.longitude.toString())
-            userCurrentLocationMarkerOnMap(LatLng(mLastLocation.latitude,mLastLocation.longitude))
+            Log.d(
+                "LatLng",
+                mLastLocation.latitude.toString() + "-------" + mLastLocation.longitude.toString()
+            )
+            userCurrentLocationMarkerOnMap(LatLng(mLastLocation.latitude, mLastLocation.longitude))
             latitudeGlobal = mLastLocation.latitude
             longitudeGlobal = mLastLocation.longitude
 
@@ -129,7 +142,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
     }
 
     @SuppressLint("MissingSuperCall")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         if (requestCode == Constants.PERMISSION_ID) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 getLastLocation()
@@ -137,10 +154,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
         }
     }
 
-    private fun userCurrentLocationMarkerOnMap (currentLatLong: LatLng) {
+    private fun userCurrentLocationMarkerOnMap(currentLatLong: LatLng) {
         addresses = geocoder?.getFromLocation(currentLatLong.latitude, currentLatLong.longitude, 1)
         val address = addresses!![0].getAddressLine(0)
-        val markerOptions = MarkerOptions ().position (currentLatLong)
+        val markerOptions = MarkerOptions().position(currentLatLong)
         markerOptions.title("You are here - $currentLatLong")
         markerOptions.snippet(address)
         val cameraPosition = CameraPosition.Builder()
@@ -150,7 +167,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
             .tilt(30f) // Sets the tilt of the camera to 30 degrees
             .build() //
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-        mMap.addMarker (markerOptions)
+        mMap.addMarker(markerOptions)
     }
 
 
@@ -165,24 +182,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
             R.id.action_google_maps -> {
                 true
             }
-            R.id.action_google_places ->{
-//                startActivity(Intent(this,NearByPlaces::class.java)
-//                    .putExtra("LAT","hii")
-//                    .putExtra("LONG","hello"))
-                val intent = Intent(this@MapsActivity,NearByPlaces::class.java)
-                intent.putExtra("CURR_LAT",latitudeGlobal)
-                intent.putExtra("CURR_LNG",longitudeGlobal)
+            R.id.action_google_places -> {
+                val intent = Intent(this@MapsActivity, NearByPlaces::class.java)
+                intent.putExtra(Constants.currentLatutude, latitudeGlobal)
+                intent.putExtra(Constants.currentLongitude, longitudeGlobal)
                 startActivity(intent)
                 return true
             }
-            R.id.action_email ->{
+            R.id.action_email -> {
                 val address = addresses!![0].getAddressLine(0)
-                val addressArray = arrayOf(address, addresses!![0].latitude.toString(),addresses!![0].longitude.toString())
-                composeEmail(addressArray,"Share Your Location")
+                val addressArray = arrayOf(
+                    address,
+                    addresses!![0].latitude.toString(),
+                    addresses!![0].longitude.toString()
+                )
+                composeEmail(addressArray, getString(R.string.share_your_location_string))
                 return true
             }
-            R.id.action_about ->{
-                startActivity(Intent(this,AboutActivity::class.java))
+            R.id.action_about -> {
+                startActivity(Intent(this, AboutActivity::class.java))
                 return true
             }
             else -> super.onOptionsItemSelected(item)
@@ -194,13 +212,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
     }
 
     fun composeEmail(addresses: Array<String?>?, subject: String?) {
+        val email: String = "test@test.com"
 
         val intent = Intent(Intent.ACTION_SEND)
-        intent.putExtra(Intent.EXTRA_EMAIL, "test@test.com")
+        intent.putExtra(Intent.EXTRA_EMAIL, email)
         intent.putExtra(Intent.EXTRA_SUBJECT, subject)
-        intent.putExtra(Intent.EXTRA_TEXT, addresses?.get(0) +" "+addresses?.get(1)+" "+addresses?.get(2))
+        intent.putExtra(
+            Intent.EXTRA_TEXT,
+            "My current location --> " + addresses?.get(0) + " " + addresses?.get(1) + " " + addresses?.get(
+                2
+            )
+        )
         intent.type = "message/rfc822"
         startActivity(Intent.createChooser(intent, "Select email"))
+
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
 }

@@ -8,4 +8,6 @@
     <string name="app_description"><i>This application will share our location with other users. \n We are using the google maps fragment along with location services to place a marker at our current location.  \n </i> \n \n \u25A0 <b>App Features:</b> \n \u25CF App consists a menu of 4 items, which are-Google Maps, Google Places, Email and About.\n \u25CF If the user clicks on the marker, the current lat/lang and current address will appear on the screen. \n \u25CF User can swap the main area in the app from a map, to a RecyclerView with a list of the
 Places found near our current location, to an email activity or fragment, and an about page.\n \u25CF The About page consists of description of the app and list of team members who  contributed in this project.  \n \u25CF Nice and beautiful animations to enhance the UI of the App. \n \n \n \u25A0 <b>Developer Information:</b> \n \n <b>Team Members:</b> \n \n \u25CF Rajdeep Singh (1115120) \n \n \u25CF Raman Singh (1114562) \n \n \u25CF Sohail Ahmed (1088669) \n \n <b>Assignment:</b> INFO-6124 Project 2F2022</string>
     <string name="about_app">About App:</string>
+    <string name="no_internet_string">No internet connection available!</string>
+    <string name="share_your_location_string">Share Your Location</string>
 </resources>
