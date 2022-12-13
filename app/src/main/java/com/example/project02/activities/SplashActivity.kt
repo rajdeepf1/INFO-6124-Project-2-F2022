@@ -22,6 +22,7 @@ class SplashActivity : AppCompatActivity() {
         setContentView(binding.root)
         Handler().postDelayed({
             startActivity(Intent(this,MapsActivity::class.java))
+            finish()
         }, Constants.setTimeOutDuration)
     }
 }
