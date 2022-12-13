@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
@@ -196,7 +197,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     addresses!![0].latitude.toString(),
                     addresses!![0].longitude.toString()
                 )
-                composeEmail(addressArray, getString(R.string.share_your_location_string))
+
+                val to = arrayOf(
+                    "r_singh175341@fanshawec.ca",
+                    "r_ramansingh@fanshaweonline.ca",
+                    "s_ahmed26551@fanshaweonline.ca"
+                )
+                val body =
+                    "My current location --> " + addressArray?.get(0) + " (" + addressArray?.get(1) + " " + addressArray?.get(
+                        2
+                    )+")"
+                composeEmail(to, getString(R.string.share_your_location_string), body)
+
                 return true
             }
             R.id.action_about -> {
@@ -211,21 +223,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return false
     }
 
-    fun composeEmail(addresses: Array<String?>?, subject: String?) {
-        val email: String = "test@test.com"
-
-        val intent = Intent(Intent.ACTION_SEND)
-        intent.putExtra(Intent.EXTRA_EMAIL, email)
-        intent.putExtra(Intent.EXTRA_SUBJECT, subject)
-        intent.putExtra(
-            Intent.EXTRA_TEXT,
-            "My current location --> " + addresses?.get(0) + " " + addresses?.get(1) + " " + addresses?.get(
-                2
-            )
-        )
-        intent.type = "message/rfc822"
-        startActivity(Intent.createChooser(intent, "Select email"))
-
+    fun composeEmail(addresses: Array<String>, subject: String, body: String) {
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:") // only email apps should handle this
+            putExtra(Intent.EXTRA_EMAIL, addresses)
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, body)
+        }
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
