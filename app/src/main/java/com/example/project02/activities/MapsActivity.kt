@@ -39,6 +39,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
 
     var geocoder: Geocoder? = null
     var addresses: List<Address>? = null
+    var latitudeGlobal : Double = 0.0
+    var longitudeGlobal : Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,7 +87,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
                     } else {
                         Log.d("LatLng",location.latitude.toString()+"-------"+location.longitude.toString())
                         userCurrentLocationMarkerOnMap(LatLng(location.latitude,location.longitude))
-
+                        latitudeGlobal = location.latitude
+                        longitudeGlobal = location.longitude
                     }
                 }
             } else {
@@ -119,6 +122,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
 
             Log.d("LatLng",mLastLocation.latitude.toString()+"-------"+mLastLocation.longitude.toString())
             userCurrentLocationMarkerOnMap(LatLng(mLastLocation.latitude,mLastLocation.longitude))
+            latitudeGlobal = mLastLocation.latitude
+            longitudeGlobal = mLastLocation.longitude
 
         }
     }
@@ -161,6 +166,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,GoogleMap.OnMarkerC
                 true
             }
             R.id.action_google_places ->{
+//                startActivity(Intent(this,NearByPlaces::class.java)
+//                    .putExtra("LAT","hii")
+//                    .putExtra("LONG","hello"))
+                val intent = Intent(this@MapsActivity,NearByPlaces::class.java)
+                intent.putExtra("CURR_LAT",latitudeGlobal)
+                intent.putExtra("CURR_LNG",longitudeGlobal)
+                startActivity(intent)
                 return true
             }
             R.id.action_email ->{
